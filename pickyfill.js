@@ -24,10 +24,10 @@
 
     // We'll use this to clear the pickyfill cache when appcache updates.
     var clearCache = function () {
-            localStorage.removeItem('pf_index');
-            for (var prop in pf_index) {
-                localStorage.removeItem(prop);
-            }
+        localStorage.removeItem('pf_index');
+        for (var prop in pf_index) {
+            localStorage.removeItem(prop);
+        }
     };
 
     // If appcache updates, clear the pickyfill cache.
