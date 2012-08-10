@@ -1,4 +1,4 @@
-/*! PickyFill - Offline caching for picturefill responsive image polyfill. Author: Rich Trott | Copyright: Regents of University of California, 2012 | License: MIT */
+/*! Pickyfill - Offline caching for picturefill responsive image polyfill. Author: Rich Trott | Copyright: Regents of University of California, 2012 | License: MIT */
 
 (function( w ) {
     "use strict";
