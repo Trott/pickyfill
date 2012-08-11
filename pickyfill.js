@@ -44,7 +44,7 @@
 
     var srcFromCacheRan = false;
     var srcFromCache = function ( ps ) {
-        var sources, src;
+        var sources, src, newSrc;
 
         // Loop the pictures
         for( var i = 0, il = ps.length; i < il; i++ ){
@@ -55,7 +55,10 @@
                 for( var j = 0, jl = sources.length; j < jl; j++ ){
                     if ((src = sources[j].getAttribute( "data-src" )) !== null ) {
                         if ( pf_index.hasOwnProperty('pf_s_' + src)) {
-                            sources[j].setAttribute('data-src', localStorage.getItem('pf_s_' + src));
+                            newSrc = localStorage.getItem('pf_s_' + src);
+                            if (newSrc !== null) {
+                                sources[j].setAttribute('data-src', localStorage.getItem('pf_s_' + src));
+                            }
                         }
                     }
                 }
