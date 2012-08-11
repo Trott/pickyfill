@@ -24,10 +24,10 @@
 
     // We'll use this to clear the pickyfill cache when appcache updates.
     var clearCache = function () {
-            localStorage.removeItem('pf_index');
-            for (var prop in pf_index) {
-                localStorage.removeItem(prop);
-            }
+        localStorage.removeItem('pf_index');
+        for (var prop in pf_index) {
+            localStorage.removeItem(prop);
+        }
     };
 
     // If appcache updates, clear the pickyfill cache.
@@ -44,7 +44,7 @@
 
     var srcFromCacheRan = false;
     var srcFromCache = function ( ps ) {
-        var sources, src;
+        var sources, src, newSrc;
 
         // Loop the pictures
         for( var i = 0, il = ps.length; i < il; i++ ){
@@ -55,7 +55,10 @@
                 for( var j = 0, jl = sources.length; j < jl; j++ ){
                     if ((src = sources[j].getAttribute( "data-src" )) !== null ) {
                         if ( pf_index.hasOwnProperty('pf_s_' + src)) {
-                            sources[j].setAttribute('data-src', localStorage.getItem('pf_s_' + src));
+                            newSrc = localStorage.getItem('pf_s_' + src);
+                            if (newSrc !== null) {
+                                sources[j].setAttribute('data-src', localStorage.getItem('pf_s_' + src));
+                            }
                         }
                     }
                 }
