@@ -82,9 +82,15 @@
         ctx.drawImage(this, 0, 0);
         try {
             dataUri = canvas.toDataURL();
+
         } catch (e) {
             // TODO: Improve error handling here. For now, if canvas.toDataURL()
             //   throws an exception, don't cache the image and move on.
+            return;
+        }
+
+        // Do not cache if the resulting cache item will take more than 128Kb.
+        if (dataUri.length > 131072) {
             return;
         }
 
@@ -94,8 +100,9 @@
             localStorage.setItem("pf_s_"+imageSrc, dataUri);
             localStorage.setItem("pf_index", JSON.stringify(pf_index));
         } catch (e) {
-            // Caching failed but there's nothing to be done about it at this point.
-            // Previously cached items are still usable. Carry on.
+            // Caching failed. Remove item from index object so next cached item
+            //   doesn't wrongly indicate this item was successfully cached.
+            delete pf_index["pf_s_"+imageSrc];
         }
     };
 
