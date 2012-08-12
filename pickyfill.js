@@ -88,14 +88,6 @@
             me;
 
         me = param.target ? param.target : param;
-        
-        // Firefox, at least FF 14 on the Mac, can trigger a load event on the element
-        // before the iamge is actually done loading. This is less than great.
-        if ((! me.complete) && ((typeof me.readyState === "undefined") || (me.readyState !== 4))) {
-            // Could do a setTimeout() or something to try again. But for now, let's just
-            // see how well we get by without those kinds of shenanigans.
-            return;
-        }
 
         imageSrc = me.getAttribute("src");
         if ((imageSrc === null) || (imageSrc.length === 0) || (imageSrc.substr(0,5) === "data:")) {
