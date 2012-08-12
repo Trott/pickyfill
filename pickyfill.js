@@ -154,5 +154,7 @@
             }
         }
     };
+    w.addEventListener('resize', w.picturefill, false);
+    w.removeEventListener('resize', w.picturefillOrig, false);
 
 }( this ));
