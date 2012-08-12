@@ -100,7 +100,6 @@
         ctx.drawImage(this, 0, 0);
         try {
             dataUri = canvas.toDataURL();
-            console.log(dataUri.length);
         } catch (e) {
             // TODO: Improve error handling here. For now, if canvas.toDataURL()
             //   throws an exception, don't cache the image and move on.
