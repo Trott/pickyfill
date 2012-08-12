@@ -6,7 +6,6 @@
     var localStorage = w.localStorage,
         applicationCache = w.applicationCache,
         image,
-        imageSrc,
         dataUri,
         pf_index_string,
         pf_index,
@@ -82,22 +81,33 @@
         }
     };
 
-    var cacheImage = function () {
-        var canvas, ctx, imageSrc;
+    var cacheImage = function ( param ) {
+        var canvas,
+            ctx,
+            imageSrc,
+            me;
 
-        imageSrc = this.getAttribute("src");
-        // Check for "data:" because sometimes it slips through.
-        // TODO: Figure out why "someimtes it slips through". (Happens on FF 14.0.1 on Mac at least.)
+        me = param.target ? param.target : param;
+        
+        // Firefox, at least FF 14 on the Mac, can trigger a load event on the element
+        // before the iamge is actually done loading. This is less than great.
+        if ((! me.complete) && ((typeof me.readyState === "undefined") || (me.readyState !== 4))) {
+            // Could do a setTimeout() or something to try again. But for now, let's just
+            // see how well we get by without those kinds of shenanigans.
+            return;
+        }
+
+        imageSrc = me.getAttribute("src");
         if ((imageSrc === null) || (imageSrc.length === 0) || (imageSrc.substr(0,5) === "data:")) {
             return;
         }
 
         canvas = w.document.createElement("canvas");
-        canvas.width = this.width;
-        canvas.height = this.height;
+        canvas.width = me.width;
+        canvas.height = me.height;
 
         ctx = canvas.getContext("2d");
-        ctx.drawImage(this, 0, 0);
+        ctx.drawImage(me, 0, 0);
         try {
             dataUri = canvas.toDataURL();
         } catch (e) {
@@ -137,12 +147,12 @@
         // Loop the pictures
         for( var i = 0, il = ps.length; i < il; i++ ){
             if( ps[ i ].getAttribute( "data-picture" ) !== null ){
-
                 image = ps[ i ].getElementsByTagName( "img" )[0];
                 if (image) {
-                    if ((imageSrc = image.getAttribute("src")) !== null) {
-                        if (imageSrc.substr(0,5) !== "data:") {
-                            image.onload = cacheImage;
+                    if (image.getAttribute("src") !== null) {
+                        image.onload = cacheImage;
+                        if (image.complete || image.readyState === 4) {
+                            cacheImage(image);
                         }
                     }
                 }
