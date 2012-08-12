@@ -30,16 +30,32 @@
         }
     };
 
-    // If appcache updates, clear the pickyfill cache.
+    // Unfortunately, reloading is the most reliable way to get stuff into the
+    //  pickyfill cache. If you wait for the user to reload, they may be offline
+    //  at that time. If we just had an updateready event, chances are very good
+    //  that they are still online. Another possibility is to just try to reload
+    //  the images that are currently shown, but there's no guarantee that those
+    //  images are in the new page or that the current page isn't missing important
+    //  images that will display in the new page and need to be cached.
+    var refreshCache = function () {
+        clearCache();
+        w.location.reload();
+    };
+
+    // If appcache updates, refresh the pickyfill cache to get new items.
+    // If appcache is obsolete, clear the pickyfill cache.
     // Appcache == IE10 or later == no need to worry about attachEvent (IE8 and earlier)
     // Anything that has appcache is going to have addEventListener.
-    applicationCache.addEventListener('updateready', clearCache, false);
+    applicationCache.addEventListener('updateready', refreshCache, false);
     applicationCache.addEventListener('obsolete', clearCache, false);
 
-    // If the updateready event or obsolete event has already fired, clear the pickyfill cache.
-    if((applicationCache.status === applicationCache.UPDATEREADY) ||
-        (applicationCache.status === applicationCache.OBSOLETE)) {
-            clearCache();
+    // If the event has already fired and we missed it, clear/refresh the pickyfill cache.
+    if(applicationCache.status === applicationCache.UPDATEREADY) {
+        refreshCache();
+    }
+
+    if (applicationCache.status === applicationCache.OBSOLETE) {
+        clearCache();
     }
 
     var srcFromCacheRan = false;
