@@ -1,10 +1,13 @@
 CACHE MANIFEST
 
 CACHE:
-
+../index.html
 matchmedia.js
 picturefill.js
 ../pickyfill.js
+
+FALLBACK:
+imgs/	imgs/fallback.png
 
 NETWORK:
 *
