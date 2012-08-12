@@ -86,7 +86,9 @@
         var canvas, ctx, imageSrc;
 
         imageSrc = this.getAttribute("src");
-        if ((imageSrc === null) || (imageSrc.length === 0)) {
+        // Check for "data:" because sometimes it slips through.
+        // TODO: Figure out why "someimtes it slips through".
+        if ((imageSrc === null) || (imageSrc.length === 0) || (imageSrc.substr(0,5) === "data:")) {
             return;
         }
 
