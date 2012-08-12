@@ -88,7 +88,8 @@
         me = param.target ? param.target : param;
 
         imageSrc = me.getAttribute("src");
-        if ((imageSrc === null) || (imageSrc.length === 0) || (imageSrc.substr(0,5) === "data:")) {
+        if ((imageSrc === null) || (imageSrc.length === 0) ||
+            (imageSrc.substr(0,5) === "data:") || (pf_index.hasOwnProperty('pf_s_' + imageSrc))) {
             return;
         }
 
