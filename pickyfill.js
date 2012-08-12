@@ -11,10 +11,8 @@
         pf_index,
         canvasTest = document.createElement('canvas');
 
-    // Don't run any of this stuff if application cache doesn't exist or isn't being used,
-    //     or localStorage or canvas are not available.
-    if ( (! applicationCache) || (applicationCache.status === applicationCache.UNCACHED) ||
-        (! localStorage) || (!(canvasTest.getContext && canvasTest.getContext('2d'))) ) {
+    // Don't run any of this stuff if application cache, localStorage or canvas are not available.
+    if ( (! applicationCache) || (! localStorage) || (!(canvasTest.getContext && canvasTest.getContext('2d'))) ) {
             return;
     }
 
@@ -125,6 +123,11 @@
         }
     };
 
+    // Exit here if uncached. If updateready fires later, it will reload,
+    //   and status will not be uncached on the that load.
+    if (applicationCache.status === applicationCache.UNCACHED) {
+        return;
+    }
     w.picturefillOrig = w.picturefill;
     w.picturefill = function () {
         var ps = w.document.getElementsByTagName( "div" );
