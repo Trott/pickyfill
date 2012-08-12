@@ -42,6 +42,18 @@
         w.location.reload();
     };
 
+    var removeSelf = function () {
+        var imageSrc = this.getAttribute("src");
+        delete pf_index[imageSrc];
+        localStorage.removeItem(imageSrc);
+        try {
+            localStorage.setItem("pf_index", JSON.stringify(pf_index));
+        }
+        catch (e) {
+            //TODO: What to do if setItem() fails here?
+        }
+    };
+
     // If appcache updates, refresh the pickyfill cache to get new items.
     // If appcache is obsolete, clear the pickyfill cache.
     // Appcache == IE10 or later == no need to worry about attachEvent (IE8 and earlier)
@@ -87,7 +99,7 @@
 
         imageSrc = this.getAttribute("src");
         // Check for "data:" because sometimes it slips through.
-        // TODO: Figure out why "someimtes it slips through".
+        // TODO: Figure out why "someimtes it slips through". (Happens on FF 14.0.1 on Mac at least.)
         if ((imageSrc === null) || (imageSrc.length === 0) || (imageSrc.substr(0,5) === "data:")) {
             return;
         }
@@ -100,7 +112,6 @@
         ctx.drawImage(this, 0, 0);
         try {
             dataUri = canvas.toDataURL();
-
         } catch (e) {
             // TODO: Improve error handling here. For now, if canvas.toDataURL()
             //   throws an exception, don't cache the image and move on.
@@ -144,6 +155,7 @@
                     if ((imageSrc = image.getAttribute("src")) !== null) {
                         if (imageSrc.substr(0,5) !== "data:") {
                             image.addEventListener("load", cacheImage, false);
+                            image.addEventListener("error", removeSelf, false);
                         }
                     }
                 }
