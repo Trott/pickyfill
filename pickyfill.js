@@ -42,18 +42,6 @@
         w.location.reload();
     };
 
-    var removeSelf = function () {
-        var imageSrc = this.getAttribute("src");
-        delete pf_index[imageSrc];
-        localStorage.removeItem(imageSrc);
-        try {
-            localStorage.setItem("pf_index", JSON.stringify(pf_index));
-        }
-        catch (e) {
-            //TODO: What to do if setItem() fails here?
-        }
-    };
-
     // If appcache updates, refresh the pickyfill cache to get new items.
     // If appcache is obsolete, clear the pickyfill cache.
     // Appcache == IE10 or later == no need to worry about attachEvent (IE8 and earlier)
@@ -155,7 +143,6 @@
                     if ((imageSrc = image.getAttribute("src")) !== null) {
                         if (imageSrc.substr(0,5) !== "data:") {
                             image.addEventListener("load", cacheImage, false);
-                            image.addEventListener("error", removeSelf, false);
                         }
                     }
                 }
