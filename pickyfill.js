@@ -88,7 +88,7 @@
         // This helps avoid Firefox storing a truncated image if the src
         // attribute is swapped out when the image is only partially loaded.
         // Problem on Firefox 14.0.1 on Mac and almost certainly others.
-        if (ev.currentTarget != imageSrc) {
+        if (ev.currentTarget.src != imageSrc) {
             return;
         }
 
