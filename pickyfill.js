@@ -79,12 +79,19 @@
         }
     };
 
-    var cacheImage = function () {
+    var cacheImage = function ( ev ) {
         var canvas,
             ctx,
             imageSrc;
 
         imageSrc = this.getAttribute("src");
+        // This helps avoid Firefox storing a truncated image if the src
+        // attribute is swapped out when the image is only partially loaded.
+        // Problem on Firefox 14.0.1 on Mac and almost certainly others.
+        if (ev.currentTarget != imageSrc) {
+            return;
+        }
+
         if ((pf_index.hasOwnProperty('pf_s_' + imageSrc)) ||
             (imageSrc.substr(0,5) === "data:") ||
             (imageSrc === null) || (imageSrc.length === 0)) {
