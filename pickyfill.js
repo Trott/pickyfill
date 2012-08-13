@@ -79,26 +79,24 @@
         }
     };
 
-    var cacheImage = function ( param ) {
+    var cacheImage = function () {
         var canvas,
             ctx,
-            imageSrc,
-            me;
+            imageSrc;
 
-        me = param.target ? param.target : param;
-
-        imageSrc = me.getAttribute("src");
-        if ((imageSrc === null) || (imageSrc.length === 0) ||
-            (imageSrc.substr(0,5) === "data:") || (pf_index.hasOwnProperty('pf_s_' + imageSrc))) {
-            return;
+        imageSrc = this.getAttribute("src");
+        if ((pf_index.hasOwnProperty('pf_s_' + imageSrc)) ||
+            (imageSrc.substr(0,5) === "data:") ||
+            (imageSrc === null) || (imageSrc.length === 0)) {
+                return;
         }
 
         canvas = w.document.createElement("canvas");
-        canvas.width = me.width;
-        canvas.height = me.height;
+        canvas.width = this.width;
+        canvas.height = this.height;
 
         ctx = canvas.getContext("2d");
-        ctx.drawImage(me, 0, 0);
+        ctx.drawImage(this, 0, 0);
         try {
             dataUri = canvas.toDataURL();
         } catch (e) {
@@ -131,7 +129,9 @@
     }
     w.picturefillOrig = w.picturefill;
     w.picturefill = function () {
-        var ps = w.document.getElementsByTagName( "div" );
+        var ps = w.document.getElementsByTagName( "div" ),
+        i,
+        il;
 
         if (! srcFromCacheRan ) {
             srcFromCacheRan = true;
@@ -141,15 +141,16 @@
         w.picturefillOrig();
 
         // Loop the pictures
-        for( var i = 0, il = ps.length; i < il; i++ ){
+        for( i = 0, il = ps.length; i < il; i++ ) {
             if( ps[ i ].getAttribute( "data-picture" ) !== null ){
                 image = ps[ i ].getElementsByTagName( "img" )[0];
                 if (image) {
                     if (image.getAttribute("src") !== null) {
-                        image.onload = cacheImage;
-                        if (image.complete || image.readyState === 4) {
-                            cacheImage(image);
-                        }
+                        image.addEventListener('load', cacheImage, false);
+//TODO: What to do (if anything) if we missed the load event. image.complete
+//  cannot be trusted, at least not on Firefox 14.0.1 on the Mac. Seems to remain
+//  set to "true" even after window is resized and src attribute is changed to an
+//  image that is not yet loaded.
                     }
                 }
             }
