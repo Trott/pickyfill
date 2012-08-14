@@ -39,16 +39,18 @@
         w.location.reload();
     };
 
-    // If appcache updates, refresh the pickyfill cache to get new items.
+    // If appcache is new, refresh the pickyfill cache to get new items.
     // If appcache is obsolete, clear the pickyfill cache.
     // Appcache == IE10 or later == no need to worry about attachEvent (IE8 and earlier)
     // Anything that has appcache is going to have addEventListener.
     applicationCache.addEventListener('updateready', refreshCache, false);
+    applicationCache.addEventListener('cached', refreshCache, false);
     applicationCache.addEventListener('obsolete', clearCache, false);
 
     // If the event has already fired and we missed it, clear/refresh the pickyfill cache.
-    if(applicationCache.status === applicationCache.UPDATEREADY) {
-        refreshCache();
+    if ((applicationCache.status === applicationCache.UPDATEREADY) ||
+        (applicationCache.status === applicationCache.CACHED)) {
+            refreshCache();
     }
 
     if (applicationCache.status === applicationCache.OBSOLETE) {
