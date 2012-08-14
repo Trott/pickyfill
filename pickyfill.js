@@ -79,7 +79,7 @@
         }
     };
 
-    var cacheImage = function () {
+    var cacheImage = function ( param ) {
         var canvas,
             ctx,
             imageSrc;
@@ -149,7 +149,7 @@
                     if (image.getAttribute("src") !== null) {
                         image.addEventListener('load', cacheImage, false);
 //TODO: What to do (if anything) if we missed the load event. image.complete
-//  cannot be trusted, at least not on Firefox 14.0.1 on the Mac. Seems to remain
+//  cannot be used for this, at least not on Firefox 14.0.1 on the Mac. It is
 //  set to "true" even after window is resized and src attribute is changed to an
 //  image that is not yet loaded.
                     }
@@ -157,7 +157,19 @@
             }
         }
     };
-    w.addEventListener('resize', w.picturefill, false);
-    w.removeEventListener('resize', w.picturefillOrig, false);
+    // WAT?!?! UserAgent sniffing?! Yes, lame, but Firefox will cache truncated
+    // images if you're resize happens at the wrong moment and there's not a
+    // an efficient way that I'm aware of to detect that this has happened.
+    //
+    // So we only cache images in Firefox on load, not on resize. I have not seen
+    // it happen on document load...yet.
+    //
+    // If you think you have a better way to handle this, see details at
+    // http://stackoverflow.com/q/11928878/436641 and submit an answer or
+    // comment there.
+    // if (navigator.userAgent.indexOf("Firefox") === -1) {
+    //     w.addEventListener('resize', w.picturefill, false);
+    //     w.removeEventListener('resize', w.picturefillOrig, false);
+    // }
 
 }( this ));
