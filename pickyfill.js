@@ -121,6 +121,19 @@
             //   doesn't wrongly indicate this item was successfully cached.
             delete pf_index["pf_s_"+imageSrc];
         }
+        // WAT?!?! UserAgent sniffing?! Yes, lame, but Firefox will cache truncated
+        // images if you're resize happens at the wrong moment and there's not a
+        // an efficient way that I'm aware of to detect that this has happened.
+        //
+        // So we only cache images in Firefox on load, not on resize. I have not seen
+        // it happen on document load...yet.
+        //
+        // If you think you have a better way to handle this, see details at
+        // http://stackoverflow.com/q/11928878/436641 and submit an answer or
+        // comment there.
+        if (navigator.userAgent.indexOf("Firefox") !== -1) {
+            this.removeEventListener('load', cacheImage, false);
+        }
     };
 
     // Exit here if uncached. If updateready fires later, it will reload,
@@ -157,19 +170,5 @@
             }
         }
     };
-    // WAT?!?! UserAgent sniffing?! Yes, lame, but Firefox will cache truncated
-    // images if you're resize happens at the wrong moment and there's not a
-    // an efficient way that I'm aware of to detect that this has happened.
-    //
-    // So we only cache images in Firefox on load, not on resize. I have not seen
-    // it happen on document load...yet.
-    //
-    // If you think you have a better way to handle this, see details at
-    // http://stackoverflow.com/q/11928878/436641 and submit an answer or
-    // comment there.
-    // if (navigator.userAgent.indexOf("Firefox") === -1) {
-    //     w.addEventListener('resize', w.picturefill, false);
-    //     w.removeEventListener('resize', w.picturefillOrig, false);
-    // }
 
 }( this ));
