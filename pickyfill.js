@@ -48,9 +48,8 @@
     applicationCache.addEventListener('obsolete', clearCache, false);
 
     // If the event has already fired and we missed it, clear/refresh the pickyfill cache.
-    if ((applicationCache.status === applicationCache.UPDATEREADY) ||
-        (applicationCache.status === applicationCache.CACHED)) {
-            refreshCache();
+    if (applicationCache.status === applicationCache.UPDATEREADY) {
+        refreshCache();
     }
 
     if (applicationCache.status === applicationCache.OBSOLETE) {
@@ -81,10 +80,11 @@
         }
     };
 
-    var cacheImage = function ( param ) {
+    var cacheImage = function () {
         var canvas,
             ctx,
-            imageSrc;
+            imageSrc,
+            mimeType;
 
         imageSrc = this.getAttribute("src");
 
@@ -100,8 +100,12 @@
 
         ctx = canvas.getContext("2d");
         ctx.drawImage(this, 0, 0);
+        
+        // Lossy JPGs will be huge as PNGs, so let JPGs be JPGs.
+        mimeType = /\.jpe?g$/i.exec(imageSrc) ? 'image/jpeg' : 'image/png';
+
         try {
-            dataUri = canvas.toDataURL();
+            dataUri = canvas.toDataURL( mimeType );
         } catch (e) {
             // TODO: Improve error handling here. For now, if canvas.toDataURL()
             //   throws an exception, don't cache the image and move on.
