@@ -112,8 +112,9 @@
             return;
         }
 
-        // Do not cache if the resulting cache item will take more than 128Kb.
-        if (dataUri.length > 131072) {
+        // Do not cache if the resulting cache item will take more than 192Kb.
+        if (dataUri.length > 196608) {
+            console.log(dataUri.length);
             return;
         }
 
