@@ -6,16 +6,13 @@
     var localStorage = w.localStorage,
         applicationCache = w.applicationCache,
         image,
-        imageSrc,
         dataUri,
         pf_index_string,
         pf_index,
         canvasTest = document.createElement('canvas');
 
-    // Don't run any of this stuff if application cache doesn't exist or isn't being used,
-    //     or localStorage or canvas are not available.
-    if ( (! applicationCache) || (applicationCache.status === applicationCache.UNCACHED) ||
-        (! localStorage) || (!(canvasTest.getContext && canvasTest.getContext('2d'))) ) {
+    // Don't run any of this stuff if application cache, localStorage or canvas are not available.
+    if ( (! applicationCache) || (! localStorage) || (!(canvasTest.getContext && canvasTest.getContext('2d'))) ) {
             return;
     }
 
@@ -42,15 +39,16 @@
         w.location.reload();
     };
 
-    // If appcache updates, refresh the pickyfill cache to get new items.
+    // If appcache is new, refresh the pickyfill cache to get new items.
     // If appcache is obsolete, clear the pickyfill cache.
     // Appcache == IE10 or later == no need to worry about attachEvent (IE8 and earlier)
     // Anything that has appcache is going to have addEventListener.
     applicationCache.addEventListener('updateready', refreshCache, false);
+    applicationCache.addEventListener('cached', refreshCache, false);
     applicationCache.addEventListener('obsolete', clearCache, false);
 
     // If the event has already fired and we missed it, clear/refresh the pickyfill cache.
-    if(applicationCache.status === applicationCache.UPDATEREADY) {
+    if (applicationCache.status === applicationCache.UPDATEREADY) {
         refreshCache();
     }
 
@@ -83,11 +81,17 @@
     };
 
     var cacheImage = function () {
-        var canvas, ctx, imageSrc;
+        var canvas,
+            ctx,
+            imageSrc,
+            mimeType;
 
         imageSrc = this.getAttribute("src");
-        if ((imageSrc === null) || (imageSrc.length === 0)) {
-            return;
+
+        if ((pf_index.hasOwnProperty('pf_s_' + imageSrc)) ||
+            (imageSrc.substr(0,5) === "data:") ||
+            (imageSrc === null) || (imageSrc.length === 0)) {
+                return;
         }
 
         canvas = w.document.createElement("canvas");
@@ -96,17 +100,21 @@
 
         ctx = canvas.getContext("2d");
         ctx.drawImage(this, 0, 0);
-        try {
-            dataUri = canvas.toDataURL();
+        
+        // Lossy JPGs will be huge as PNGs, so let JPGs be JPGs.
+        mimeType = /\.jpe?g$/i.exec(imageSrc) ? 'image/jpeg' : 'image/png';
 
+        try {
+            dataUri = canvas.toDataURL( mimeType );
         } catch (e) {
             // TODO: Improve error handling here. For now, if canvas.toDataURL()
             //   throws an exception, don't cache the image and move on.
             return;
         }
 
-        // Do not cache if the resulting cache item will take more than 128Kb.
-        if (dataUri.length > 131072) {
+        // Do not cache if the resulting cache item will take more than 192Kb.
+        if (dataUri.length > 196608) {
+            console.log(dataUri.length);
             return;
         }
 
@@ -120,11 +128,31 @@
             //   doesn't wrongly indicate this item was successfully cached.
             delete pf_index["pf_s_"+imageSrc];
         }
+        // WAT?!?! UserAgent sniffing?! Yes, lame, but Firefox will cache truncated
+        // images if you're resize happens at the wrong moment and there's not a
+        // an efficient way that I'm aware of to detect that this has happened.
+        //
+        // So we only cache images in Firefox on load, not on resize. I have not seen
+        // it happen on document load...yet.
+        //
+        // If you think you have a better way to handle this, see details at
+        // http://stackoverflow.com/q/11928878/436641 and submit an answer or
+        // comment there.
+        if (navigator.userAgent.indexOf("Firefox") !== -1) {
+            this.removeEventListener('load', cacheImage, false);
+        }
     };
 
+    // Exit here if uncached. If updateready fires later, it will reload,
+    //   and status will not be uncached on the that load.
+    if (applicationCache.status === applicationCache.UNCACHED) {
+        return;
+    }
     w.picturefillOrig = w.picturefill;
     w.picturefill = function () {
-        var ps = w.document.getElementsByTagName( "div" );
+        var ps = w.document.getElementsByTagName( "div" ),
+        i,
+        il;
 
         if (! srcFromCacheRan ) {
             srcFromCacheRan = true;
@@ -134,15 +162,16 @@
         w.picturefillOrig();
 
         // Loop the pictures
-        for( var i = 0, il = ps.length; i < il; i++ ){
+        for( i = 0, il = ps.length; i < il; i++ ) {
             if( ps[ i ].getAttribute( "data-picture" ) !== null ){
-
                 image = ps[ i ].getElementsByTagName( "img" )[0];
                 if (image) {
-                    if ((imageSrc = image.getAttribute("src")) !== null) {
-                        if (imageSrc.substr(0,5) !== "data:") {
-                            image.addEventListener("load", cacheImage, false);
-                        }
+                    if (image.getAttribute("src") !== null) {
+                        image.addEventListener('load', cacheImage, false);
+//TODO: What to do (if anything) if we missed the load event. image.complete
+//  cannot be used for this, at least not on Firefox 14.0.1 on the Mac. It is
+//  set to "true" even after window is resized and src attribute is changed to an
+//  image that is not yet loaded.
                     }
                 }
             }
