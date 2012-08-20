@@ -113,7 +113,8 @@
         }
 
         // Do not cache if the resulting cache item will take more than 192Kb.
-        if (dataUri.length > 196608) {
+        // Do not cache if dataUri is corrupt and useless. (Hi, Android 2.3!)
+        if ((dataUri.length > 196608) || (dataUri.length < 6)){
             return;
         }
 
