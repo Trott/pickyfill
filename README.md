@@ -12,7 +12,9 @@ Offline caching for [Picturefill](https://github.com/scottjehl/picturefill) resp
 
 Responsive images and offline application caching do not play well together. For a brief explanation, see "Gotcha #6" of ["Application Cache is a Douchebag"](http://www.alistapart.com/articles/application-cache-is-a-douchebag/).
 
-Pickyfill (partially) solves the problem by storing responsive images as data URLs in LocalStorage. If your page is using the HTML5 offline appcache, pickyfill will detect this and store picturefill images as they are loaded. This makes them available if the user is offline and also improves page load time if they are on a slow network.
+Pickyfill (partially) solves the problem by storing responsive images as data URLs in LocalStorage. If your page is using the HTML5 offline Appcache, pickyfill will detect this and store picturefill images as they are loaded. It will only store the images that your device displays, so (for example) an iPhone will only cache iPhone-sized images; it will not download and store crazy large images designed for large screens.  
+
+Pickyfill makes the cached images available if the user is offline. It can also improves page load time if the user is on a slow network.
 
 ## Support, or Where Won't This Work?
 
@@ -37,3 +39,5 @@ Pickyfill requires ApplicationCache, LocalStorage, and Canvas. If a browser that
 ## How do I use it?
 
 Use picturefill the same way you would without pickyfill. The only changes will be to load `pickyfill.js` after `picturefill.js` and to give your site/page an HTML5 Appcache manifest.
+
+Because pickyfill will only cache images that are actually displayed, it is possible for a user to visit the site, then visit the site again while offline, resize their browser, and end up with a broken image (because the image that is required at the new browser size was never downloaded before and therefore has not been cached). For this reason, it is important to have an appropriate small `FALLBACK` image in your offline AppCache.
