@@ -40,4 +40,16 @@ Pickyfill requires ApplicationCache, LocalStorage, and Canvas. If a browser that
 
 Use picturefill the same way you would without pickyfill. The only changes will be to load `pickyfill.js` after `picturefill.js` and to give your site/page an HTML5 Appcache manifest.
 
+```html
+<html manifest="/manifest.appcache">
+    <head>
+...
+        <script src="/assets/js/matchmedia.js"></script>
+        <script src="/assets/js/picturefill.js"></script>
+        <script src="/assets/js/pickyfill.js"></script>
+...
+```
+
+Although it would be better to minify and concatenate the JS files, the above code is for clarity.
+
 Because pickyfill will only cache images that are actually displayed, it is possible for a user to visit the site, then visit the site again while offline, resize their browser, and end up with a broken image (because the image that is required at the new browser size was never downloaded before and therefore has not been cached). For this reason, it is important to have an appropriate small `FALLBACK` image in your offline Appcache.
