@@ -30,9 +30,9 @@ Pickyfill requires ApplicationCache, LocalStorage, and Canvas. If a browser that
     <tr><td>Android</td><td>All versions</td><td>it's complicated**</td></tr>
 </table>
 
-* In Firefox, pickyfill will cache images on load, but not on resize. This is to avoid caching truncated/corrupted images. On resize, behavior gracefully degrades to regular picturefill behavior.
+*In Firefox, pickyfill will cache images on load, but not on resize. This is to avoid caching truncated/corrupted images. On resize, behavior gracefully degrades to regular picturefill behavior.
 
-** Android browser in Android 2.3 (and probably others) does not implement `toDataURL()` completely/correctly. Pickyfill will detect the problem and degrade gracefully to regular picturefill behavior. Otherwise, pickyfill is fully supported in Android. 
+**Android browser in Android 2.3 (and probably others) does not implement `toDataURL()` completely/correctly. Pickyfill will detect the problem and degrade gracefully to regular picturefill behavior. Otherwise, pickyfill is fully supported in Android. 
 
 ## How do I use it?
 
