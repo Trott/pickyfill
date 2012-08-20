@@ -14,7 +14,7 @@ Responsive images and offline application caching do not play well together. For
 
 Pickyfill (partially) solves the problem by storing responsive images as data URLs in LocalStorage. If your page is using the HTML5 offline appcache, pickyfill will detect this and store picturefill images as they are loaded. This makes them available if the user is offline and also improves page load time if they are on a slow network.
 
-### Support, or Where Won't This Work?
+## Support, or Where Won't This Work?
 
 Pickyfill requires ApplicationCache, LocalStorage, and Canvas. If a browser that does not support these features visits a site that uses pickyfill, then pickyfill will do nothing and the experience will gracefully degrade to straight-up picturefill.
 
