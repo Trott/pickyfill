@@ -23,7 +23,9 @@
     var clearCache = function () {
         localStorage.removeItem('pf_index');
         for (var prop in pf_index) {
-            localStorage.removeItem(prop);
+            if (pf_index.hasOwnProperty(prop)) {
+                localStorage.removeItem(prop);
+            }
         }
     };
 
